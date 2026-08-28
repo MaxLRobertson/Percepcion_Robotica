@@ -49,3 +49,32 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# ESP-IDF
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+
+# Artefactos generados al compilar el componente vendorizado de micro-ROS
+# (libmicroros.mk clona y compila ROS2 Jazzy entero; es regenerable, no fuente propia)
+esp32_code/components/micro_ros_espidf_component/micro_ros_dev/
+esp32_code/components/micro_ros_espidf_component/micro_ros_src/
+esp32_code/components/micro_ros_espidf_component/include/
+esp32_code/components/micro_ros_espidf_component/libmicroros.a
+esp32_code/components/micro_ros_espidf_component/esp32_toolchain.cmake
+
+# Configuracion de editor especifica de cada PC
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# ROS2 (workspaces de build/instalacion locales, no van al repo)
+install/
+log/
+
+# Datos generados por el dashboard
+*.csv
