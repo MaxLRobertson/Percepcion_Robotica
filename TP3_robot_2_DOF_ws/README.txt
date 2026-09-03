@@ -23,7 +23,7 @@ Para activar el nodo de control:
 
 	source install/setup.bash
 	
-	ros2 run tank_controller_pkg tank_control_node.py
+	ros2 run tank_controller_pkg tank_control_node
 
 
 
