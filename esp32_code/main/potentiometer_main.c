@@ -21,7 +21,8 @@
 #include <std_msgs/msg/float32.h>
 #include "uros_network_interfaces.h"
 
-/* Entradas analogicas. Las tres pertenecen a ADC1, que puede usarse con Wi-Fi. */
+/* Entradas analogicas (placa ESP32 clasica). Las tres pertenecen a ADC1,
+ * que puede usarse con Wi-Fi; ADC2 no se usa por esa razon. */
 #define GPIO_DIRECTO             32
 #define GPIO_BUFFER              33
 #define GPIO_AMPLIFICADO         34
@@ -95,7 +96,25 @@ static std_msgs__msg__Float32 mensaje_encoder_angulo;
 
 static bool iniciar_calibracion_adc(void)
 {
-#if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
+#if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
+    /* Esquema del ESP32-S3 (y otros chips nuevos); la compensacion se */
+    /* calcula por canal, se usa el del pote directo como referencia. */
+    adc_cali_curve_fitting_config_t configuracion = {
+        .unit_id = ADC_UNIT_1,
+        .chan = CANAL_DIRECTO,
+        .atten = ADC_ATTEN_DB_12,
+        .bitwidth = ADC_BITWIDTH_12,
+    };
+
+    const esp_err_t resultado =
+        adc_cali_create_scheme_curve_fitting(&configuracion, &calibracion_adc);
+
+    if (resultado == ESP_OK) {
+        ESP_LOGI(TAG, "Calibracion ADC curve-fitting activada");
+        return true;
+    }
+#elif ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
+    /* Esquema del ESP32 clasico. */
     adc_cali_line_fitting_config_t configuracion = {
         .unit_id = ADC_UNIT_1,
         .atten = ADC_ATTEN_DB_12,
@@ -109,16 +128,18 @@ static bool iniciar_calibracion_adc(void)
         ESP_LOGI(TAG, "Calibracion ADC line-fitting activada");
         return true;
     }
+#else
+    ESP_LOGW(TAG, "Este chip no tiene un esquema de calibracion ADC soportado");
+    ESP_LOGW(TAG, "Se usara la conversion nominal raw * 3.3 / 4095");
+    return false;
+#endif
 
     if (resultado == ESP_ERR_NOT_SUPPORTED) {
-        ESP_LOGW(TAG, "Calibracion no disponible en este chip");
+        ESP_LOGW(TAG, "Calibracion no disponible (eFuse sin quemar en este chip)");
     } else {
         ESP_LOGW(TAG, "No se pudo iniciar la calibracion ADC: %s",
                  esp_err_to_name(resultado));
     }
-#else
-    ESP_LOGW(TAG, "ESP-IDF no ofrece line-fitting para este target");
-#endif
 
     ESP_LOGW(TAG, "Se usara la conversion nominal raw * 3.3 / 4095");
     return false;

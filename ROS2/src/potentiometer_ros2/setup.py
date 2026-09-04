@@ -23,6 +23,7 @@ setup(
     entry_points={
         "console_scripts": [
             "pot_dashboard = potentiometer_ros2.dashboard:main",
+            "tank_bridge = potentiometer_ros2.tank_bridge:main",
         ],
     },
 )
