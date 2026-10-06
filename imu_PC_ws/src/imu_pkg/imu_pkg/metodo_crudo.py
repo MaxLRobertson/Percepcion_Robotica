@@ -1,6 +1,7 @@
 """Nodo del metodo 1.1: estima actitud, velocidad y posicion desde /imu/raw."""
 import numpy as np
 import rclpy
+from rclpy._rclpy_pybind11 import RCLError
 from rclpy.executors import ExternalShutdownException
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
@@ -112,6 +113,9 @@ def main():
         rclpy.spin(nodo)
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
+    except RCLError:
+        if rclpy.ok():   # solo se ignora si el contexto ya estaba apagado
+            raise
     finally:
         nodo.destroy_node()
         rclpy.try_shutdown()
