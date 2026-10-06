@@ -20,5 +20,10 @@ setup(
     maintainer_email="alumno@example.com",
     description="Actitud, velocidad y posicion con el MPU-6050 (micro-ROS).",
     license="Apache-2.0",
-    entry_points={"console_scripts": []},
+    entry_points={
+        "console_scripts": [
+            "simulador_imu = imu_pkg.simulador_imu:main",
+            "metodo_crudo = imu_pkg.metodo_crudo:main",
+        ],
+    },
 )
