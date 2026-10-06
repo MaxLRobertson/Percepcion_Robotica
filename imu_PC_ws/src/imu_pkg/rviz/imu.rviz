@@ -1,0 +1,94 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+    Splitter Ratio: 0.5
+    Tree Height: 400
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Plane Cell Count: 20
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 0.5
+      Name: TF (metodo 1.1)
+      Show Arrows: false
+      Show Axes: true
+      Show Names: true
+      Value: true
+    - Class: rviz_default_plugins/Odometry
+      Angle Tolerance: 0.1
+      Position Tolerance: 0.1
+      Enabled: true
+      Keep: 1
+      Name: Verdad
+      Shape:
+        Alpha: 1
+        Axes Length: 0.4
+        Axes Radius: 0.03
+        Color: 0; 200; 0
+        Value: Axes
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /verdad/odom
+      Value: true
+    - Class: rviz_default_plugins/Odometry
+      Angle Tolerance: 100
+      Position Tolerance: 0.05
+      Enabled: true
+      Keep: 200
+      Name: Estela metodo 1.1
+      Shape:
+        Alpha: 0.6
+        Color: 255; 100; 0
+        Head Length: 0.05
+        Head Radius: 0.02
+        Shaft Length: 0.1
+        Shaft Radius: 0.01
+        Value: Arrow
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /metodo1/odom
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 40; 40; 48
+    Fixed Frame: odom
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 6
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Name: Current View
+      Pitch: 0.5
+      Value: Orbit (rviz)
+      Yaw: 0.8
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 800
+  Width: 1200
