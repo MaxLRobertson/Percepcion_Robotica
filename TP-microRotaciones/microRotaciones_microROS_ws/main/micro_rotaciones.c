@@ -16,6 +16,8 @@
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 
+#include "esp_cpu.h"   // esp_cpu_get_cycle_count() (ESP-IDF 5.x)
+
 #ifdef CONFIG_MICRO_ROS_ESP_XRCE_DDS_MIDDLEWARE
 #include <rmw_microros/rmw_microros.h>
 #endif
@@ -164,23 +166,32 @@ static void cmd_callback(const void *msgin)
              m->data.data[0], m->data.data[1], m->data.data[2], roll, pitch, yaw, pasos);
 
     // ---- 1) Rotación directa ----
+    uint32_t c0 = esp_cpu_get_cycle_count();
+
     float R_dir[3][3];
     rotacion_directa(roll, pitch, yaw, R_dir);
 
     // ---- 2) Microrotaciones ----
     // C = I * Rz^N * Ry^N * Rx^N  ->  equivale a Rz*Ry*Rx (misma convención).
     // Se hacen 'pasos' microrotaciones por cada eje con ángulo distinto de cero.
+    uint32_t c1 = esp_cpu_get_cycle_count();
+
     float C[3][3];
     mat_identidad(C);
     if (yaw   != 0.0f) aplicar_micro(C, 2, yaw,   pasos);
     if (pitch != 0.0f) aplicar_micro(C, 1, pitch, pasos);
     if (roll  != 0.0f) aplicar_micro(C, 0, roll,  pasos);
+
+    uint32_t c2 = esp_cpu_get_cycle_count();
 #if ORTOGONALIZAR_MICRO
     ortogonalizar_matriz(C);
 #endif
 
     log_matriz("Matriz directa (mat_orient)", R_dir);
     log_matriz("Matriz micro (mat_orient_micro)", C);
+
+    ESP_LOGI(TAG, "Directa: %lu ciclos | Micro: %lu ciclos (pasos=%d)",
+         (unsigned long)(c1 - c0), (unsigned long)(c2 - c1), pasos);
 
     // ---- 3) Publicar resultados ----
     matriz_a_buffer(R_dir, buf_dir);
