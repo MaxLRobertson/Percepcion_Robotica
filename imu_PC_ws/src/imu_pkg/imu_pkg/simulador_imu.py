@@ -22,6 +22,9 @@ class SimuladorImu(Node):
         self.declare_parameter("sesgo_acel", [0.05, -0.03, 0.08])   # [m/s²]
         self.declare_parameter("semilla", 0)
         self.declare_parameter("pausas", False)   # alterna movimiento y paradas
+        # DMP SIMULADO: valores inventados, no representan al chip real.
+        self.declare_parameter("dmp_ruido_deg", 0.2)    # ruido de la orientacion [deg]
+        self.declare_parameter("dmp_deriva_yaw_dps", 0.05)  # deriva del yaw [deg/s]
 
         self.dt = 1.0 / self.get_parameter("frecuencia_hz").value
         self.ruido_g = self.get_parameter("ruido_gyro").value
@@ -29,11 +32,14 @@ class SimuladorImu(Node):
         self.sesgo_g = np.array(self.get_parameter("sesgo_gyro").value)
         self.sesgo_a = np.array(self.get_parameter("sesgo_acel").value)
         self.pausas = self.get_parameter("pausas").value
+        self.dmp_ruido = np.radians(self.get_parameter("dmp_ruido_deg").value)
+        self.dmp_deriva = np.radians(self.get_parameter("dmp_deriva_yaw_dps").value)
         self.rng = np.random.default_rng(self.get_parameter("semilla").value)
 
         # Igual que micro-ROS en la ESP32: best-effort.
         qos = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
         self.pub_imu = self.create_publisher(Imu, "/imu/raw", qos)
+        self.pub_dmp = self.create_publisher(Imu, "/imu/dmp", qos)
         self.pub_verdad = self.create_publisher(Odometry, "/verdad/odom", 10)
 
         self.n = 0
@@ -42,7 +48,8 @@ class SimuladorImu(Node):
     def paso(self):
         # La trayectoria arranca recien cuando alguien escucha /imu/raw, para
         # que el reposo inicial (calibracion) no se pierda.
-        if self.n == 0 and self.pub_imu.get_subscription_count() == 0:
+        if self.n == 0 and (self.pub_imu.get_subscription_count() == 0
+                            and self.pub_dmp.get_subscription_count() == 0):
             t = 0.0
         else:
             t = self.n * self.dt
@@ -52,6 +59,16 @@ class SimuladorImu(Node):
 
         g = gyro + self.sesgo_g + self.rng.normal(0.0, self.ruido_g, 3)
         a = fuerza + self.sesgo_a + self.rng.normal(0.0, self.ruido_a, 3)
+
+        # DMP simulado: orientacion verdadera + ruido + deriva lenta del yaw.
+        err = Rot.from_rotvec(self.rng.normal(0.0, self.dmp_ruido, 3)
+                              + np.array([0.0, 0.0, self.dmp_deriva * t]))
+        qd = (err * Rot.from_matrix(R)).as_quat()
+        dmp = Imu()
+        dmp.header.stamp = ahora
+        dmp.header.frame_id = "imu_link"
+        dmp.orientation.x, dmp.orientation.y, dmp.orientation.z, dmp.orientation.w = map(float, qd)
+        self.pub_dmp.publish(dmp)
 
         imu = Imu()
         imu.header.stamp = ahora

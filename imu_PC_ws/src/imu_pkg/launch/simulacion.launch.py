@@ -1,4 +1,4 @@
-"""Simulador de IMU + metodo 1.1 + RViz2."""
+"""Simulador de IMU + metodo 1.1 + metodo 1.2 (DMP simulado) + RViz2."""
 import os
 import re
 
@@ -49,6 +49,16 @@ def generate_launch_description() -> LaunchDescription:
                         LaunchConfiguration("calibrar_acel"), value_type=bool),
                     "kp": ParameterValue(LaunchConfiguration("kp"), value_type=float),
                     "ki": ParameterValue(LaunchConfiguration("ki"), value_type=float),
+                }],
+            ),
+            Node(
+                package="imu_pkg",
+                executable="metodo_dmp",
+                output="screen",
+                parameters=[{
+                    "zupt": ParameterValue(LaunchConfiguration("zupt"), value_type=bool),
+                    "calibrar_acel": ParameterValue(
+                        LaunchConfiguration("calibrar_acel"), value_type=bool),
                 }],
             ),
             Node(

@@ -24,6 +24,7 @@ setup(
         "console_scripts": [
             "simulador_imu = imu_pkg.simulador_imu:main",
             "metodo_crudo = imu_pkg.metodo_crudo:main",
+            "metodo_dmp = imu_pkg.metodo_dmp:main",
             "registrador = imu_pkg.registrador:main",
             "graficar_comparacion = imu_pkg.graficar:main",
         ],

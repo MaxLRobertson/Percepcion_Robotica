@@ -65,6 +65,25 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /metodo1/odom
       Value: true
+    - Class: rviz_default_plugins/Odometry
+      Angle Tolerance: 100
+      Position Tolerance: 0.05
+      Enabled: true
+      Keep: 200
+      Name: Estela metodo 1.2 (DMP)
+      Shape:
+        Alpha: 0.6
+        Color: 60; 140; 255
+        Head Length: 0.05
+        Head Radius: 0.02
+        Shaft Length: 0.1
+        Shaft Radius: 0.01
+        Value: Arrow
+      Topic:
+        Depth: 5
+        Reliability Policy: Reliable
+        Value: /metodo2/odom
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 40; 40; 48

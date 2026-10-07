@@ -20,7 +20,7 @@ CABECERA = ["t", "topico", "x", "y", "z", "vx", "vy", "vz", "roll", "pitch", "ya
 class Registrador(Node):
     def __init__(self):
         super().__init__("registrador")
-        self.declare_parameter("topicos", ["/verdad/odom", "/metodo1/odom"])
+        self.declare_parameter("topicos", ["/verdad/odom", "/metodo1/odom", "/metodo2/odom"])
         self.declare_parameter("archivo", "")
 
         archivo = self.get_parameter("archivo").value
