@@ -16,11 +16,13 @@ Z = np.array([0.0, 0.0, 1.0])
 
 class EstimadorCrudo:
     def __init__(self, kp=1.0, ki=0.05, tolerancia_g=0.5, zupt=False,
-                 umbral_gyro=0.05, umbral_acel=0.3, ventana_zupt=0.2):
+                 umbral_gyro=0.05, umbral_acel=0.3, ventana_zupt=0.2,
+                 calibrar_acel=True):
         self.kp = kp                      # ganancia proporcional de la correccion
         self.ki = ki                      # ganancia integral (sesgo del giroscopio)
         self.tolerancia_g = tolerancia_g  # |a| debe estar en G ± tolerancia para corregir
         self.zupt = zupt
+        self.calibrar_acel = calibrar_acel  # corrige el sesgo vertical del acelerometro
         self.umbral_gyro = umbral_gyro    # [rad/s]
         self.umbral_acel = umbral_acel    # [m/s²]
         self.ventana_zupt = ventana_zupt  # [s] que debe sostenerse el reposo
@@ -30,6 +32,7 @@ class EstimadorCrudo:
         self.vel = np.zeros(3)
         self.sesgo_gyro = np.zeros(3)     # calibrado en reposo
         self.integral = np.zeros(3)       # estimacion adicional de sesgo (Mahony)
+        self.sesgo_acel_vert = 0.0        # [m/s²] sesgo a lo largo de la gravedad
         self._calib = []
         self._t_quieto = 0.0
         self.calibrado = False
@@ -46,11 +49,17 @@ class EstimadorCrudo:
         roll = np.arctan2(ay, az)
         pitch = np.arctan2(-ax, np.hypot(ay, az))
         self.R = Rot.from_euler("ZYX", [0.0, pitch, roll]).as_matrix()
+        # En reposo el modulo del acelerometro deberia ser G. Lo que sobra o
+        # falta es el sesgo en la direccion vertical (el unico observable aca).
+        if self.calibrar_acel:
+            self.sesgo_acel_vert = float(np.linalg.norm(m[3:]) - G)
         self.calibrado = True
 
     # ---- paso de estimacion ----------------------------------------------
     def actualizar(self, gyro, acel, dt):
         w = gyro - self.sesgo_gyro
+        # El sesgo vertical se resta a lo largo de la vertical estimada (en ejes del sensor).
+        acel = acel - self.sesgo_acel_vert * self.R[2, :]
 
         # Correccion con la gravedad, solo si el acelerometro mide ~1 g.
         norma = np.linalg.norm(acel)

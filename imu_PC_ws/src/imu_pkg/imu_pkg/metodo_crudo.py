@@ -26,6 +26,7 @@ class MetodoCrudo(Node):
         self.declare_parameter("ki", 0.05)
         self.declare_parameter("tolerancia_g", 0.5)
         self.declare_parameter("zupt", False)
+        self.declare_parameter("calibrar_acel", True)
         self.declare_parameter("calibracion_s", 1.5)
 
         self.est = EstimadorCrudo(
@@ -33,6 +34,7 @@ class MetodoCrudo(Node):
             ki=self.get_parameter("ki").value,
             tolerancia_g=self.get_parameter("tolerancia_g").value,
             zupt=self.get_parameter("zupt").value,
+            calibrar_acel=self.get_parameter("calibrar_acel").value,
         )
         self.t_calib = self.get_parameter("calibracion_s").value
         self.t0 = None
