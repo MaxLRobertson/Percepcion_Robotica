@@ -27,15 +27,26 @@ def generate_launch_description() -> LaunchDescription:
         [
             DeclareLaunchArgument("rviz", default_value="true"),
             DeclareLaunchArgument("zupt", default_value="false"),
+            DeclareLaunchArgument("pausas", default_value="false"),
+            DeclareLaunchArgument("calibrar_acel", default_value="true"),
             DeclareLaunchArgument("kp", default_value="1.0"),
             DeclareLaunchArgument("ki", default_value="0.05"),
-            Node(package="imu_pkg", executable="simulador_imu", output="screen"),
+            Node(
+                package="imu_pkg",
+                executable="simulador_imu",
+                output="screen",
+                parameters=[{
+                    "pausas": ParameterValue(LaunchConfiguration("pausas"), value_type=bool),
+                }],
+            ),
             Node(
                 package="imu_pkg",
                 executable="metodo_crudo",
                 output="screen",
                 parameters=[{
                     "zupt": ParameterValue(LaunchConfiguration("zupt"), value_type=bool),
+                    "calibrar_acel": ParameterValue(
+                        LaunchConfiguration("calibrar_acel"), value_type=bool),
                     "kp": ParameterValue(LaunchConfiguration("kp"), value_type=float),
                     "ki": ParameterValue(LaunchConfiguration("ki"), value_type=float),
                 }],

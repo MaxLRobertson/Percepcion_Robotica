@@ -21,12 +21,14 @@ class SimuladorImu(Node):
         self.declare_parameter("sesgo_gyro", [0.01, -0.01, 0.005])  # [rad/s]
         self.declare_parameter("sesgo_acel", [0.05, -0.03, 0.08])   # [m/s²]
         self.declare_parameter("semilla", 0)
+        self.declare_parameter("pausas", False)   # alterna movimiento y paradas
 
         self.dt = 1.0 / self.get_parameter("frecuencia_hz").value
         self.ruido_g = self.get_parameter("ruido_gyro").value
         self.ruido_a = self.get_parameter("ruido_acel").value
         self.sesgo_g = np.array(self.get_parameter("sesgo_gyro").value)
         self.sesgo_a = np.array(self.get_parameter("sesgo_acel").value)
+        self.pausas = self.get_parameter("pausas").value
         self.rng = np.random.default_rng(self.get_parameter("semilla").value)
 
         # Igual que micro-ROS en la ESP32: best-effort.
@@ -45,7 +47,7 @@ class SimuladorImu(Node):
         else:
             t = self.n * self.dt
             self.n += 1
-        R, pos, vel, gyro, fuerza = estado_verdadero(t)
+        R, pos, vel, gyro, fuerza = estado_verdadero(t, self.pausas)
         ahora = self.get_clock().now().to_msg()
 
         g = gyro + self.sesgo_g + self.rng.normal(0.0, self.ruido_g, 3)
