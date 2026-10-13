@@ -1,0 +1,48 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Suelo fijo
+      Enabled: true
+      Cell Size: 1
+      Plane: XY
+      Plane Cell Count: 12
+      Alpha: 0.4
+      Color: 190; 174; 159
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Tanque TP3 · filtro colaborativo
+      Enabled: true
+      Namespaces: {}
+      Topic:
+        Value: /imu_vistas/tanque
+        Depth: 10
+        Reliability Policy: Reliable
+        Durability Policy: Volatile
+        History Policy: Keep Last
+      Value: true
+  Global Options:
+    Fixed Frame: odom
+    Frame Rate: 30
+    Background Color: 255; 250; 245
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/FocusCamera
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: Vista orbital
+      Distance: 4
+      Focal Point: {X: 0, Y: 0, Z: 0.6}
+      Pitch: 0.6
+      Yaw: 0.5
+      Value: Orbit (rviz)
+Window Geometry:
+  Width: 1280
+  Height: 800
