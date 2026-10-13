@@ -35,7 +35,7 @@ class Integrador:
         """R: actitud actual; w_norm: |velocidad angular| sin sesgo [rad/s]."""
         a_mundo = R @ acel_corregida - G * Z
         self.vel += a_mundo * dt
-        self.pos += self.vel * dt
+        # self.pos += self.vel * dt
         if self.zupt:
             quieto = (w_norm < self.umbral_gyro
                       and abs(np.linalg.norm(acel_corregida) - G) < self.umbral_acel)

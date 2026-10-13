@@ -42,7 +42,7 @@ class MetodoCrudo(Node):
         self.verdad = None
 
         qos = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
-        self.create_subscription(Imu, "/imu/raw", self.cb_imu, qos)
+        self.create_subscription(Imu, "/imu_raw", self.cb_imu, qos)
         self.create_subscription(Odometry, "/verdad/odom", self.cb_verdad, 10)
         self.pub_odom = self.create_publisher(Odometry, "/metodo1/odom", 10)
         self.pub_error = self.create_publisher(Float32MultiArray, "/metodo1/error", 10)

@@ -47,8 +47,8 @@ class MetodoDmp(Node):
         self.verdad = None
 
         qos = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
-        self.create_subscription(Imu, "/imu/dmp", self.cb_dmp, qos)
-        self.create_subscription(Imu, "/imu/raw", self.cb_raw, qos)
+        self.create_subscription(Imu, "/imu_dmp", self.cb_dmp, qos)
+        self.create_subscription(Imu, "/imu_raw", self.cb_raw, qos)
         self.create_subscription(Odometry, "/verdad/odom", self.cb_verdad, 10)
         self.pub_odom = self.create_publisher(Odometry, "/metodo2/odom", 10)
         self.pub_error = self.create_publisher(Float32MultiArray, "/metodo2/error", 10)

@@ -38,8 +38,8 @@ class SimuladorImu(Node):
 
         # Igual que micro-ROS en la ESP32: best-effort.
         qos = QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)
-        self.pub_imu = self.create_publisher(Imu, "/imu/raw", qos)
-        self.pub_dmp = self.create_publisher(Imu, "/imu/dmp", qos)
+        self.pub_imu = self.create_publisher(Imu, "/imu_raw", qos)
+        self.pub_dmp = self.create_publisher(Imu, "/imu_dmp", qos)
         self.pub_verdad = self.create_publisher(Odometry, "/verdad/odom", 10)
 
         self.n = 0
